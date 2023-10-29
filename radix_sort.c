@@ -8,6 +8,10 @@ struct node {
 
 struct node* createNode(int value) {
     struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
+    }
     newNode->data = value;
     newNode->next = NULL;
     return newNode;
