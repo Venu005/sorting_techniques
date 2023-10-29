@@ -1,112 +1,108 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// using radix sort linked list version of storing elements -- using bin sort instead of count Sort
- struct node{
+// Structure for a node in the linked list
+struct node {
     int data;
-    struct node *next;
- };
+    struct node* next;
+};
 
- struct node *createNode(int value){
-    struct node* newNode =  (struct node*)malloc(sizeof(struct node));
-    newNode-> data =  value;
-    newNode->next =  NULL;
+// Function to create a new node
+struct node* createNode(int value) {
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    newNode->data = value;
+    newNode->next = NULL;
     return newNode;
- 
- }
- void insertNode( struct node** head, int value){
-    struct node* newNode =  createNode(value);
-    newNode->next =  *head;
-    *head =  newNode;
+}
 
- }
- struct node* joinTwoLists(struct node*a, struct node* b){
-    if(a == NULL) return b;
+// Function to insert a node at the beginning of the list
+void insertNode(struct node** head, int value) {
+    struct node* newNode = createNode(value);
+    newNode->next = *head;
+    *head = newNode;
+}
+
+// Function to join two linked lists
+struct node* joinTwoLists(struct node* a, struct node* b) {
+    if (a == NULL) return b;
     struct node* temp = a;
-    while(temp-> next != NULL){
-        temp=  temp->next;
-
+    while (temp->next != NULL) {
+        temp = temp->next;
     }
-    temp->next =  b;
-     return a;
+    temp->next = b;
+    return a;
+}
 
- }
- void binSort(int arr[], int n, int exp){
-    // exp is for digit representation
-    int range = 10;
+// Function to perform the bin/bucket sort for a specific digit position
+void binSort(int arr[], int n, int exp) {
+    int range = 10; // Base 10 for digits
     struct node* bins[range];
-    for (int i=0;i<range;i++){
-        bins[i] =  NULL;
+    for (int i = 0; i < range; i++) {
+        bins[i] = NULL;
     }
-    //  elements into bins based on digit value 
-    for(int i=0;i<n;i++){
-        int digit  =  (arr[i]/exp)% range;
-        insertNode(&bins[digit],arr[i]);
+    
+    // Place elements into bins based on the selected digit
+    for (int i = 0; i < n; i++) {
+        int digit = (arr[i] / exp) % range;
+        insertNode(&bins[digit], arr[i]);
+    }
 
-    }
-    //combining bins
+    // Combine bins back into the array
     int index = 0;
-    for(int i = 0; i< range ;i++){
-        //bins[i]=  joinTwoLists(bins[i],NULL);
+    for (int i = 0; i < range; i++) {
+        arr[index] = bins[i]->data; // Update the array with the elements in this bin
         struct node* current = bins[i];
-        while(current!= NULL){
-            arr[index] =  current->data;
-            current =  current-> next;
-            index++;
-
-        }
-
-    }
-    // to free memory
-    // for(int i=0;i<range;i++){
-    //     struct node* current =  bins[i];
-    //     while(current!=NULL){
-    //         struct  node* temp =  current;
-    //         current =  current->next;
-    //         free (temp);
-    //     }
-
-    // }
- }
-
-// izzz
-void radixSort(int arr[],int n){
-    int max =  arr[0];
-    for(int i=1;i<n;i++){
-        if(arr[i]>max){
-            max =  arr[i];
-        }
-    }
-    // implementing binSort 😿😿
-    for (int exp = 1;max/exp > 0;exp*=10){
-        binSort(arr,n,exp);
+        bins[i] = current->next; // Move to the next node in the bin
+        free(current); // Free the memory for the node
+        index++;
     }
 }
-int main(){
+
+// Function to perform radix sort
+void radixSort(int arr[], int n) {
+    int max = arr[0];
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+
+    // Find the maximum number of digits in the maximum value
+    int exp = 1;
+    while (max / exp > 0) {
+        binSort(arr, n, exp);
+        exp *= 10;
+    }
+}
+
+int main() {
     int n;
     printf("Enter the number of elements: ");
-    scanf("%d",&n);
-    int *arr =  (int *)malloc(n*sizeof(int));
-    if (arr == NULL){
-        printf("memory fail hogayii");
+    scanf("%d", &n);
+    int* arr = (int*)malloc(n * sizeof(int));
+    
+    if (arr == NULL) {
+        printf("Memory allocation failed");
         return 1;
     }
+    
     printf("Enter the elements: ");
-    for(int i=0;i<n;i++){
-        scanf("%d",&arr[i]);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
     }
-    printf("before sorting:");
-    for(int i=0;i<n;i++){
-        printf("%d ",arr[i]);
+    
+    printf("Before sorting: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
     }
-    radixSort(arr,n);
-    printf("\nAfter sorting:");
-    for(int i=0;i<n;i++){
-        printf("%d ",arr[i]);
+    
+    radixSort(arr, n);
+    
+    printf("\nAfter sorting: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
     }
-    //free(arr);
+    
+    free(arr); // Don't forget to free the allocated memory
     return 0;
-
-
 }
- 
